@@ -1,0 +1,15 @@
+- attributes = [:i, :a, :s, :t, :ws, :w, :armor_save, :ward_save]
+%table
+  %tr
+    - attributes.each do |attribute|
+      %td
+        = attribute
+    %td
+      chance to win
+  %tr
+    - attributes.each do |attribute|
+      %td
+        %input{:value => '1', :type => 'text', :name => "#{object}[#{attribute}]", :size => 2}
+        .slider
+    %td{:id => "#{object}_chance_to_win"}
+      

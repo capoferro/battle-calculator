@@ -1,0 +1,13 @@
+!!! XML
+!!! Strict
+%html
+  %head
+    %script{:type => "text/javascript", :src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"}
+    %script{:type => "text/javascript", :src => "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"}
+    %script{:type => "text/javascript", :src => "/javascripts/app.js"}
+    %link{:rel => 'stylesheet', :href => '/stylesheets/pepper-grinder/jquery-ui-1.8.6.custom.css'}
+    %title Duel Calculator
+  %body
+    %form
+      = haml :attribute_form, :locals => {:object => 'one'}
+      = haml :attribute_form, :locals => {:object => 'two'}
