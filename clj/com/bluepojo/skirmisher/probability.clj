@@ -1,6 +1,7 @@
 (ns com.bluepojo.skirmisher.probability
   (:require  [clojure.test :as test])
-  (:require [com.bluepojo.skirmisher.model :as model]))
+  (:require [com.bluepojo.skirmisher.model :as model])
+  (:require [clojure.contrib.trace :as trace]))
 
 (test/with-test
   (defn to_wound
@@ -60,19 +61,35 @@
 (test/with-test
   (defn probability_of
     ([target_roll]
-       (/ (- 6 (min 6 (max 0 target_roll)))
+       (/ (- 7 (min 7 (max 1 target_roll)))
           6)))
   (test/is (= (probability_of 6) (/ 1 6)))
   (test/is (= (probability_of 7) 0))
   (test/is (= (probability_of 4) (/ 3 6)))
-  (test/is (= (probability_of 0) 0))
+  (test/is (= (probability_of 0) 1))
   (test/is (= (probability_of -1) 1))
   )
 
-;; (test/with-test
-;;   (defn to_wound_on_single_attack
-;;     ([attacker defender]
-;;        ()))
-;;   (test/is (= (to_wound_on_single_attack (Model 0 5 0 3 0 0 0 0 0 1 7) (Model 0 3 0 0 3 0 0 0 0 1 7)) (/ 1 72))))
+(test/with-test
+  (defn inverted
+    [probability]
+    (- 1 probability))
+  (test/is (= (inverted 1/3) 2/3))
+  (test/is (= (inverted 3/5) 2/5))
+  (test/is (= (inverted 1) 0))
+  (test/is (= (inverted 0) 1)))
+
+(test/with-test
+  (defn to_wound_on_single_attack
+    ([attacker defender]
+       (reduce * [(probability_of (to_hit (:ws attacker) (:ws defender)))
+                  (probability_of (to_wound (:s attacker) (:t defender)))
+                  (inverted (probability_of (to_save_armor (:s attacker) (:armor defender))))
+                  (inverted (probability_of (to_save_ward  (:ward defender))))])))
+  ;; 3 to hit, 4 to wound, no saves: 2/3 hit, 1/2 wound, 0/6 saves
+  (test/is (= (to_wound_on_single_attack (model/create :ws 5 :s 5) (model/create :ws 3 :t 5)) (/ 1 3)))
+  (test/is (= (to_wound_on_single_attack (model/create :ws 5 :s 5) (model/create :ws 3 :t 5 :armor 1)) (/ 1 9)))
+  (test/is (= (to_wound_on_single_attack (model/create :ws 5 :s 5) (model/create :ws 3 :t 5 :armor 1 :ward 4)) (/ 1 18)))
+  (test/is (= (to_wound_on_single_attack (model/create :ws 5 :s 5) (model/create :ws 3 :t 5 :ward 4)) (/ 1 6))))
 
 

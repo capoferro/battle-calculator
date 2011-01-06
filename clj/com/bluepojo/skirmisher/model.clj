@@ -1,3 +1,4 @@
+(ns com.bluepojo.skirmisher.model)
 (use '[clojure.contrib.def :only [defnk]])
 
 (defrecord Model [m ws bs s t w i a ld armor ward])
