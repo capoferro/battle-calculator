@@ -121,11 +121,9 @@
   ([attacks wounds chance_to_wound remaining_chance exact]
      (if (kill-impossible? attacks wounds remaining_chance) 0
          (if (kill-completed? attacks wounds exact) remaining_chance
-             (let [remaining_chance_for_wound_branch (* chance_to_wound remaining_chance)
-                   remaining_chance_for_fail_branch (- remaining_chance remaining_chance_for_wound_branch)
-                   wound_branch (perform-kill (- attacks 1) (- wounds 1) chance_to_wound, remaining_chance_for_wound_branch exact)
-                   fail_branch (perform-kill (- attacks 1) wounds chance_to_wound remaining_chance_for_fail_branch exact)]
-               (+ wound_branch fail_branch))))))
+             ;; return the chance to kill if a wound does land added
+             ;; to the chance to kill if a wound does not land
+             (+ (perform-kill (- attacks 1) (- wounds 1) chance_to_wound (* chance_to_wound remaining_chance) exact) (perform-kill (- attacks 1) wounds chance_to_wound (- remaining_chance (* chance_to_wound remaining_chance)) exact))))))
 
 (test/with-test
   (defn to-kill
