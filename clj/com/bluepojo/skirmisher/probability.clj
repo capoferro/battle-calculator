@@ -154,6 +154,28 @@
 (test/with-test
   (defn to-score-exact-wounds
     ([attacker defender wounds]
-       ())))
+       (let [chance_to_wound (to-wound-on-single-attack attacker defender)]
+         (perform-kill (:a attacker) wounds chance_to_wound 1 true))))
+  (let [defender (model/create :ws 3 :t 3)
+        target 1]
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 3 :a 1) defender target) 1/4))
+    (test/is (= (to-score-exact-wounds (model/create :ws 4 :s 3 :a 1) defender target) 1/3))
+    (test/is (= (to-score-exact-wounds (model/create :ws 1 :s 3 :a 1) defender target) 1/6))
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 4 :a 1) defender target) 1/3))
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 5 :a 1) defender target) 5/12)))
+  (let [defender (model/create :ws 3 :t 3)
+        target 2]
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 3 :a 1) defender target) 0))
+    (test/is (= (to-score-exact-wounds (model/create :ws 4 :s 3 :a 2) defender target) 1/9))
+    (test/is (= (to-score-exact-wounds (model/create :ws 1 :s 3 :a 2) defender target) 1/36))
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 4 :a 2) defender target) 1/9))
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 5 :a 2) defender target) 25/144)))
+  (let [defender (model/create :ws 3 :t 3)
+        target 1]
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 3 :a 2) defender target) 3/8))
+    (test/is (= (to-score-exact-wounds (model/create :ws 4 :s 3 :a 2) defender target) 4/9))
+    (test/is (= (to-score-exact-wounds (model/create :ws 1 :s 3 :a 2) defender target) 5/18))
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 4 :a 2) defender target) 4/9))
+    (test/is (= (to-score-exact-wounds (model/create :ws 3 :s 5 :a 2) defender target) 35/72))))
 
 
